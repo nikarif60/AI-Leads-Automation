@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      ENABLE_LIVE_SCANS: ${{ vars.ENABLE_LEAD_SCANS }}
+      ENABLE_LIVE_SCANS: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == false && 'true' || vars.ENABLE_LEAD_SCANS }}
       MAX_ALERTS_PER_SCAN: ${{ vars.MAX_ALERTS_PER_SCAN || '5' }}
       MAX_GOOGLE_REQUESTS_PER_SCAN: ${{ vars.MAX_GOOGLE_REQUESTS_PER_SCAN || '5' }}
       DAILY_GOOGLE_REQUEST_LIMIT: ${{ vars.DAILY_GOOGLE_REQUEST_LIMIT || '25' }}
