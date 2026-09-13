@@ -20,7 +20,7 @@ export const leads: Lead[] = [
     lastSeen: "Today, 8:42 AM",
     discoveredAt: "Today, 8:39 AM",
     englishDraft: "Hi Ruang Bina Studio, I noticed your recent renovation work is shared mainly through social media. A focused portfolio website could help homeowners compare projects and request quotations more easily. I build practical websites for Malaysian businesses and would be happy to share a simple direction for your team.",
-    bmDraft: "Hi Ruang Bina Studio, saya perasan projek renovasi terkini banyak dikongsi melalui media sosial. Website portfolio yang kemas boleh bantu pemilik rumah melihat hasil kerja dan meminta sebut harga dengan lebih mudah. Saya membina website praktikal untuk bisnes Malaysia dan boleh kongsikan cadangan ringkas untuk pihak anda.",
+    bmDraft: "Hi Ruang Bina Studio, saya perasan projek renovasi terkini banyak dikongsi melalui media sosial. Website portfolio yang kemas boleh bantu pemilik rumah tengok hasil kerja dan minta sebut harga dengan lebih mudah. Saya boleh kongsikan cadangan ringkas kalau berminat.",
     scope: ["Project portfolio", "Quotation enquiry", "Service areas", "WhatsApp handoff"],
     scoreReasons: [
       { label: "No official website", points: 25 },
@@ -50,7 +50,7 @@ export const leads: Lead[] = [
     lastSeen: "Today, 8:41 AM",
     discoveredAt: "Today, 8:35 AM",
     englishDraft: "Hi Meridian Compliance Partners, your specialist services are clearly established, but the current mobile website makes them difficult to compare quickly. I help Malaysian service businesses improve credibility and enquiry flow with focused, responsive websites. May I share a concise homepage direction based on your public service information?",
-    bmDraft: "Hi Meridian Compliance Partners, servis kepakaran pihak anda jelas dan kukuh, tetapi website semasa agak sukar digunakan untuk membandingkan servis melalui telefon. Saya membantu bisnes perkhidmatan Malaysia meningkatkan kredibiliti dan aliran pertanyaan melalui website responsif. Boleh saya kongsikan cadangan ringkas untuk halaman utama?",
+    bmDraft: "Hi Meridian Compliance Partners, servis kepakaran syarikat memang jelas, tapi website semasa agak susah digunakan melalui telefon. Saya bantu bisnes perkhidmatan Malaysia kemaskan kredibiliti dan aliran pertanyaan. Boleh saya kongsikan cadangan ringkas untuk homepage?",
     scope: ["Corporate profile", "Service pages", "Mobile enquiry", "Trust signals"],
     scoreReasons: [
       { label: "Outdated mobile website", points: 20 },
@@ -80,7 +80,7 @@ export const leads: Lead[] = [
     lastSeen: "Today, 8:40 AM",
     discoveredAt: "Today, 8:31 AM",
     englishDraft: "Hi Teluk Senja Stay, I found your accommodation while reviewing stays around Batu Ferringhi. A simple direct enquiry website could gather room details, location information and WhatsApp enquiries in one place without replacing your current channels. I can share a compact example if useful.",
-    bmDraft: "Hi Teluk Senja Stay, saya jumpa penginapan pihak anda semasa membuat semakan sekitar Batu Ferringhi. Website pertanyaan terus yang ringkas boleh kumpulkan maklumat bilik, lokasi dan WhatsApp dalam satu tempat tanpa menggantikan saluran sedia ada. Saya boleh kongsikan contoh ringkas jika berminat.",
+    bmDraft: "Hi Teluk Senja Stay, saya jumpa penginapan ini semasa semak sekitar Batu Ferringhi. Website pertanyaan terus yang ringkas boleh kumpulkan maklumat bilik, lokasi dan WhatsApp dalam satu tempat. Saya boleh kongsikan contoh ringkas kalau berminat.",
     scope: ["Room gallery", "Availability enquiry", "Location guide", "Direct WhatsApp"],
     scoreReasons: [
       { label: "No official website", points: 25 },
@@ -109,7 +109,7 @@ export const leads: Lead[] = [
     lastSeen: "Yesterday, 5:18 PM",
     discoveredAt: "Yesterday, 5:13 PM",
     englishDraft: "Hi Northline Auto Detailing, your service packages are visible on social media, but customers may need to scroll to compare them. A compact service website could make package selection and WhatsApp enquiries faster. I build practical websites for Malaysian businesses and can share a simple direction.",
-    bmDraft: "Hi Northline Auto Detailing, pakej servis pihak anda ada di media sosial, tetapi pelanggan perlu banyak scroll untuk membandingkannya. Website servis yang ringkas boleh mudahkan pemilihan pakej dan pertanyaan WhatsApp. Saya membina website praktikal untuk bisnes Malaysia dan boleh kongsikan cadangan ringkas.",
+    bmDraft: "Hi Northline Auto Detailing, pakej servis ada di media sosial, tapi pelanggan perlu banyak scroll untuk bandingkan. Website servis yang ringkas boleh mudahkan pemilihan pakej dan pertanyaan WhatsApp. Saya boleh kongsikan cadangan ringkas.",
     scope: ["Package comparison", "Before and after gallery", "Booking enquiry"],
     scoreReasons: [
       { label: "Social-only presence", points: 20 },

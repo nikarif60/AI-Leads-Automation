@@ -53,6 +53,6 @@ function initialDrafts(lead: Lead) {
   const scope = lead.scope.slice(0, 2).join(" and ") || "a clearer website and enquiry flow";
   return {
     English: lead.englishDraft || `Hi ${lead.company},\n\nI am with NykStack. A quick research note: ${lead.reason}\n\nI think a focused website with ${scope} could make it easier for customers to understand your offer and get in touch. Would you be open to seeing a quick example?\n\nThank you.`,
-    BM: lead.bmDraft || `Hi ${lead.company},\n\nSaya dari NykStack. Untuk rujukan: ${lead.reason}\n\nSaya rasa website yang jelas dengan ${scope} boleh bantu pelanggan faham servis anda dan hubungi anda dengan lebih mudah. Adakah anda terbuka untuk lihat contoh ringkas?\n\nTerima kasih.`,
+    BM: lead.bmDraft || `Hi ${lead.company},\n\nSaya Nik dari NykStack. Saya nampak ${lead.reason.toLowerCase()}\n\nDengan ${scope}, pelanggan mungkin lebih senang faham servis dan terus hubungi team. Nak tengok contoh ringkas?\n\nTerima kasih.`,
   };
 }
