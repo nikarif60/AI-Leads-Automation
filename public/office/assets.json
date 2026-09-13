@@ -1,0 +1,82 @@
+{
+  "desk": {
+    "width": 104,
+    "height": 67
+  },
+  "monitor": {
+    "width": 38,
+    "height": 45
+  },
+  "keyboard": {
+    "width": 44,
+    "height": 18
+  },
+  "chair": {
+    "width": 32,
+    "height": 44
+  },
+  "cabinet": {
+    "width": 32,
+    "height": 56
+  },
+  "bookshelf": {
+    "width": 48,
+    "height": 64
+  },
+  "printer": {
+    "width": 38,
+    "height": 47
+  },
+  "water": {
+    "width": 28,
+    "height": 68
+  },
+  "whiteboard": {
+    "width": 80,
+    "height": 53
+  },
+  "plant": {
+    "width": 42,
+    "height": 52
+  },
+  "lamp": {
+    "width": 26,
+    "height": 37
+  },
+  "window": {
+    "width": 88,
+    "height": 74
+  },
+  "door": {
+    "width": 43,
+    "height": 56
+  },
+  "server": {
+    "width": 39,
+    "height": 64
+  },
+  "inbox": {
+    "width": 39,
+    "height": 32
+  },
+  "phone": {
+    "width": 39,
+    "height": 22
+  },
+  "map": {
+    "width": 104,
+    "height": 60
+  },
+  "clock": {
+    "width": 24,
+    "height": 25
+  },
+  "floor": {
+    "width": 64,
+    "height": 64
+  },
+  "wall": {
+    "width": 64,
+    "height": 64
+  }
+}

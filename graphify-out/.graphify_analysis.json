@@ -1,0 +1,319 @@
+{
+  "communities": {
+    "0": [
+      "src_app_page",
+      "src_app_page_home",
+      "src_app_scans_page",
+      "src_app_scans_page_metadata",
+      "src_app_scans_page_scanspage",
+      "src_components_integration_map",
+      "src_components_integration_map_integrationmap",
+      "src_components_integration_map_statuscopy",
+      "src_components_lead_explorer",
+      "src_components_lead_explorer_score",
+      "src_components_metric_card",
+      "src_components_metric_card_metriccard",
+      "src_components_status_badge",
+      "src_components_status_badge_labels",
+      "src_components_status_badge_statusbadge",
+      "src_lib_mock_data",
+      "src_lib_mock_data_commandcentre",
+      "src_lib_mock_data_scans",
+      "src_lib_types",
+      "src_lib_types_lead",
+      "src_lib_types_scanjob",
+      "src_lib_types_scanstate",
+      "src_lib_types_websitestatus"
+    ],
+    "1": [
+      "ref_dom",
+      "ref_dom_iterable",
+      "ref_esnext",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_incremental",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_paths",
+      "tsconfig_compileroptions_plugins",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target"
+    ],
+    "2": [
+      "src_app_leads_page",
+      "src_app_leads_page_leadspage",
+      "src_app_leads_page_metadata",
+      "src_app_pipeline_page",
+      "src_app_pipeline_page_columns",
+      "src_app_pipeline_page_metadata",
+      "src_app_pipeline_page_pipelinepage",
+      "src_app_telegram_page",
+      "src_app_telegram_page_metadata",
+      "src_app_telegram_page_telegrampage",
+      "src_components_lead_explorer_leadexplorer",
+      "src_components_page_header",
+      "src_components_page_header_pageheader",
+      "src_lib_mock_data_leads",
+      "src_lib_types_leadstatus"
+    ],
+    "3": [
+      "eslint",
+      "eslint_config_next",
+      "package_devdependencies",
+      "package_devdependencies_eslint",
+      "package_devdependencies_eslint_config_next",
+      "package_devdependencies_types_node",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_typescript",
+      "types_node",
+      "types_react",
+      "types_react_dom",
+      "typescript"
+    ],
+    "4": [
+      "next",
+      "package_dependencies",
+      "package_dependencies_next",
+      "package_dependencies_phosphor_icons_react",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_dependencies_supabase_ssr",
+      "package_dependencies_supabase_supabase_js",
+      "phosphor_icons_react",
+      "react",
+      "react_dom",
+      "supabase_ssr",
+      "supabase_supabase_js"
+    ],
+    "5": [
+      "package",
+      "package_engines",
+      "package_engines_node",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_lint",
+      "package_scripts_scan_check",
+      "package_scripts_scan_dry",
+      "package_scripts_start",
+      "package_version"
+    ],
+    "6": [
+      "ref_mts",
+      "ref_next_dev_types_ts",
+      "ref_next_env_d_ts",
+      "ref_next_types_ts",
+      "ref_node_modules",
+      "ref_ts",
+      "ref_tsx",
+      "tsconfig",
+      "tsconfig_exclude",
+      "tsconfig_include"
+    ],
+    "7": [
+      "src_app_leads_id_page",
+      "src_app_leads_id_page_checkmark",
+      "src_app_leads_id_page_generatemetadata",
+      "src_app_leads_id_page_generatestaticparams",
+      "src_app_leads_id_page_leaddetailpage",
+      "src_components_draft_editor",
+      "src_components_draft_editor_drafteditor",
+      "src_components_lead_actions",
+      "src_components_lead_actions_leadactions"
+    ],
+    "8": [
+      "src_app_layout",
+      "src_app_layout_metadata",
+      "src_app_layout_montserrat",
+      "src_app_layout_rootlayout",
+      "src_components_app_shell",
+      "src_components_app_shell_appshell",
+      "src_components_app_shell_brandlockup",
+      "src_components_app_shell_navigation"
+    ],
+    "9": [
+      "scripts_run_scan",
+      "scripts_run_scan_locationbatches",
+      "scripts_run_scan_niches",
+      "scripts_run_scan_notificationlimit",
+      "scripts_run_scan_plan",
+      "scripts_run_scan_selectrotation",
+      "scripts_run_scan_selfcheck"
+    ],
+    "10": [
+      "src_app_settings_page",
+      "src_app_settings_page_metadata",
+      "src_app_settings_page_settingspage",
+      "src_components_settings_form",
+      "src_components_settings_form_niches",
+      "src_components_settings_form_places",
+      "src_components_settings_form_settingsform"
+    ],
+    "11": [
+      "src_lib_supabase_client",
+      "src_lib_supabase_client_createclient",
+      "src_lib_supabase_env",
+      "src_lib_supabase_env_getsupabasepublicenv",
+      "src_lib_supabase_env_issupabaseconfigured",
+      "src_lib_supabase_server",
+      "src_lib_supabase_server_createclient"
+    ],
+    "12": [
+      "eslint_config",
+      "eslint_config_eslintconfig"
+    ],
+    "13": [
+      "next_config",
+      "next_config_nextconfig"
+    ],
+    "14": [
+      "src_app_error",
+      "src_app_error_errorpage"
+    ],
+    "15": [
+      "src_app_loading",
+      "src_app_loading_loading"
+    ],
+    "16": [
+      "src_app_manifest",
+      "src_app_manifest_manifest"
+    ],
+    "17": [
+      "src_app_not_found",
+      "src_app_not_found_notfound"
+    ]
+  },
+  "cohesion": {
+    "0": 0.15810276679841898,
+    "1": 0.10526315789473684,
+    "2": 0.18095238095238095,
+    "3": 0.15384615384615385,
+    "4": 0.15384615384615385,
+    "5": 0.15384615384615385,
+    "6": 0.2,
+    "7": 0.2777777777777778,
+    "8": 0.2857142857142857,
+    "9": 0.38095238095238093,
+    "10": 0.3333333333333333,
+    "11": 0.47619047619047616,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0
+  },
+  "gods": [
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 7
+    },
+    {
+      "id": "tsconfig_include",
+      "label": "include",
+      "degree": 7
+    },
+    {
+      "id": "src_components_page_header_pageheader",
+      "label": "PageHeader()",
+      "degree": 6
+    },
+    {
+      "id": "src_lib_mock_data_leads",
+      "label": "leads",
+      "degree": 6
+    },
+    {
+      "id": "src_components_status_badge_statusbadge",
+      "label": "StatusBadge()",
+      "degree": 5
+    },
+    {
+      "id": "src_lib_supabase_env_getsupabasepublicenv",
+      "label": "getSupabasePublicEnv()",
+      "degree": 5
+    },
+    {
+      "id": "src_lib_types_leadstatus",
+      "label": "LeadStatus",
+      "degree": 4
+    },
+    {
+      "id": "tsconfig_compileroptions_lib",
+      "label": "lib",
+      "degree": 4
+    },
+    {
+      "id": "scripts_run_scan_selfcheck",
+      "label": "selfCheck()",
+      "degree": 3
+    }
+  ],
+  "surprises": [
+    {
+      "source": "createClient()",
+      "target": "getSupabasePublicEnv()",
+      "source_files": [
+        "src/lib/supabase/client.ts",
+        "src/lib/supabase/env.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `createClient()` unexpectedly reaches hub `getSupabasePublicEnv()`"
+    },
+    {
+      "source": "createClient()",
+      "target": "getSupabasePublicEnv()",
+      "source_files": [
+        "src/lib/supabase/server.ts",
+        "src/lib/supabase/env.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `createClient()` unexpectedly reaches hub `getSupabasePublicEnv()`"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `dependencies` to `package.json`?",
+      "why": "High betweenness centrality (0.031) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `devDependencies` connect `devDependencies` to `package.json`?",
+      "why": "High betweenness centrality (0.031) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `compilerOptions` connect `compilerOptions` to `include`?",
+      "why": "High betweenness centrality (0.027) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `eslintConfig`, `nextConfig`, `name` to the rest of the system?",
+      "why": "64 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `compilerOptions` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.10526315789473684 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

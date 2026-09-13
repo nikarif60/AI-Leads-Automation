@@ -1,0 +1,47 @@
+name: Lead scan
+
+on:
+  schedule:
+    - cron: "17 */5 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Run the planner without external requests
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lead-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.ENABLE_LEAD_SCANS == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ENABLE_LIVE_SCANS: ${{ vars.ENABLE_LEAD_SCANS }}
+      MAX_ALERTS_PER_SCAN: ${{ vars.MAX_ALERTS_PER_SCAN || '5' }}
+      MAX_GOOGLE_REQUESTS_PER_SCAN: ${{ vars.MAX_GOOGLE_REQUESTS_PER_SCAN || '5' }}
+      DAILY_GOOGLE_REQUEST_LIMIT: ${{ vars.DAILY_GOOGLE_REQUEST_LIMIT || '25' }}
+      NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
+      OWNER_USER_ID: ${{ secrets.OWNER_USER_ID }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run scan:check
+      - name: Plan scan
+        run: node scripts/run-scan.mjs ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '--dry-run' || '' }}
