@@ -4,6 +4,7 @@ import { ArrowSquareOut, Check, ClipboardText, CopySimple, FloppyDisk, Globe, Ma
 import { startTransition, useActionState, useMemo, useState, useTransition } from "react";
 import { generateLeadDraft, recordWhatsAppOpened, saveLeadDraft, updateLeadStatus, type MutationState } from "@/app/actions";
 import { StatusBadge } from "@/components/status-badge";
+import { fallbackOutreachDraft } from "@/lib/outreach-draft";
 import type { Lead } from "@/lib/types";
 
 const initialState: MutationState = { error: "", notice: "" };
@@ -50,9 +51,9 @@ function OutreachDesk({ lead, leads, mode, selectedId, onSelect }: { lead: Lead;
 }
 
 function initialDrafts(lead: Lead) {
-  const scope = lead.scope.slice(0, 2).join(" and ") || "a clearer website and enquiry flow";
+  const facts = { business_name: lead.company, niche: lead.niche, city: lead.city, state: lead.state, website_status: lead.websiteStatus.toLowerCase().replace(/ /g, "_"), research_summary: lead.reason, opportunity_summary: lead.opportunity, suggested_scope: lead.scope };
   return {
-    English: lead.englishDraft || `Hi ${lead.company},\n\nI am with NykStack. A quick research note: ${lead.reason}\n\nI think a focused website with ${scope} could make it easier for customers to understand your offer and get in touch. Would you be open to seeing a quick example?\n\nThank you.`,
-    BM: lead.bmDraft || `Hi ${lead.company},\n\nSaya Nik dari NykStack. Saya nampak ${lead.reason.toLowerCase()}\n\nDengan ${scope}, pelanggan mungkin lebih senang faham servis dan terus hubungi team. Nak tengok contoh ringkas?\n\nTerima kasih.`,
+    English: lead.englishDraft || fallbackOutreachDraft(facts, "English"),
+    BM: lead.bmDraft || fallbackOutreachDraft(facts, "BM"),
   };
 }

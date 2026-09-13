@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { getAdminClient, placeToLead, requiredLiveEnv, searchPlaces } from "./google-places-adapter.mjs";
 import { priorityLeadKeyboard, priorityLeadMessage, sendTelegramMessage } from "./telegram-notifier.mjs";
-import { generateOutreachDraft } from "../src/lib/outreach-draft.ts";
+import { fallbackOutreachDraft, generateOutreachDraft } from "../src/lib/outreach-draft.ts";
 
 const niches = ["corporate_services", "renovation_interior", "property_homestay", "salon_barber", "automotive", "cafe_restaurant"];
 const locationBatches = [
@@ -46,6 +46,10 @@ async function selfCheck() {
   assert.match(keyboard.inline_keyboard[0][0].url, /^https:\/\/wa\.me\/60123456789\?text=/);
   assert.match(keyboard.inline_keyboard[0][1].url, /^https:\/\/wa\.me\/60123456789\?text=/);
   assert.match(keyboard.inline_keyboard[1][0].url, /^https:\/\/www\.google\.com\/maps\/search/);
+  const secondKeyboard = priorityLeadKeyboard({ id: "lead-2", business_name: "Another Co", niche: "automotive", city: "Johor Bahru", website_status: "social_only", suggested_scope: ["Service menu"], whatsapp_number: "60123456789" }, "https://app.example");
+  assert.notEqual(keyboard.inline_keyboard[0][0].url, secondKeyboard.inline_keyboard[0][0].url);
+  assert.match(decodeURIComponent(secondKeyboard.inline_keyboard[0][1].url), /Another Co/);
+  assert.match(fallbackOutreachDraft({ business_name: "Another Co", niche: "automotive", city: "Johor Bahru", website_status: "social_only", suggested_scope: ["Service menu"] }, "BM"), /media sosial/);
   const lead = placeToLead({ id: "places/x", displayName: { text: "Demo Co" }, formattedAddress: "Kuala Lumpur, Malaysia", internationalPhoneNumber: "+60123456789", types: [] }, { niche: "corporate_services", city: "Kuala Lumpur" });
   assert.equal(lead.country_code, "MY");
   assert.equal(lead.website_status, "no_website");
@@ -54,6 +58,13 @@ async function selfCheck() {
     fetchImpl: async () => new Response(JSON.stringify({ choices: [{ message: { content: "I could not find an official website link on the listing I reviewed." } }] })),
   });
   assert.match(draft, /could not find an official website link/i);
+  const prompts = [];
+  await generateOutreachDraft({
+    lead: { business_name: "Another Co", niche: "automotive", city: "Johor Bahru", website_status: "social_only", research_summary: "The listing points to social media.", suggested_scope: ["Service menu"] }, language: "BM", apiKey: "test", baseUrl: "https://ai.example", model: "test",
+    fetchImpl: async (_url, init) => { prompts.push(JSON.parse(String(init?.body)).messages[0].content); return new Response(JSON.stringify({ choices: [{ message: { content: "Hi Another Co" } }] })); },
+  });
+  assert.match(prompts[0], /Another Co/);
+  assert.match(prompts[0], /The listing points to social media/);
   const aiKeyboard = priorityLeadKeyboard({ id: "lead-1", business_name: "Demo Co", city: "Kuala Lumpur", whatsapp_number: "60123456789", draft_en: draft, draft_bm: "Saya tidak menjumpai pautan website rasmi." }, "https://app.example");
   assert.match(aiKeyboard.inline_keyboard[0][0].url, /could%20not%20find%20an%20official%20website%20link/i);
   assert.match(aiKeyboard.inline_keyboard[0][1].url, /Saya%20tidak%20menjumpai/i);

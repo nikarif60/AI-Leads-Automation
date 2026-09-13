@@ -21,8 +21,8 @@ export function priorityLeadMessage(lead, appUrl = "") {
 
 export function priorityLeadKeyboard(lead, appUrl = "") {
   const phone = String(lead.whatsapp_number || lead.phone || "").replace(/\D/g, "");
-  const englishDraft = String(lead.draft_en || `Hi ${lead.business_name},\n\nI am with NykStack. I noticed an opportunity to make it easier for customers to learn about your business and get in touch. Would you be open to seeing a quick example?`);
-  const bmDraft = String(lead.draft_bm || `Hi ${lead.business_name},\n\nSaya Nik dari NykStack. Saya nampak peluang untuk mudahkan pelanggan faham bisnes ini dan hubungi team dengan lebih senang. Nak tengok contoh ringkas?`);
+  const englishDraft = String(lead.draft_en || fallbackOutreachDraft(lead, "English"));
+  const bmDraft = String(lead.draft_bm || fallbackOutreachDraft(lead, "BM"));
   const sourceUrls = Array.isArray(lead.source_urls) ? lead.source_urls : [];
   const mapsUrl = sourceUrls.find((url) => /^https:\/\/(?:www\.)?google\.[^/]+\/maps|^https:\/\/maps\.app\.goo\.gl\//.test(String(url))) || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lead.business_name} ${lead.city || "Malaysia"}`)}`;
   const rows = phone.length >= 8
@@ -47,3 +47,4 @@ export async function sendTelegramMessage({ token, chatId, text, keyboard, fetch
   if (!response.ok || !body.ok) throw new Error(body.description || "Telegram notification failed.");
   return String(body.result.message_id);
 }
+import { fallbackOutreachDraft } from "../src/lib/outreach-draft.ts";

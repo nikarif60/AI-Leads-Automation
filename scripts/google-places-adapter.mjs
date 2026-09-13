@@ -9,6 +9,10 @@ const FIELD_MASK = [
 
 function clean(value) { return typeof value === "string" ? value.trim() : ""; }
 function normalise(value) { return clean(value).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); }
+function typeLabel(types) {
+  const type = (types ?? []).find((item) => !["point_of_interest", "establishment"].includes(item));
+  return type ? type.replace(/_/g, " ") : "";
+}
 function component(place, type) {
   return (place.addressComponents ?? []).find((item) => item.types?.includes(type))?.longText ?? "";
 }
@@ -20,6 +24,7 @@ export function placeToLead(place, { niche, city }) {
   const phone = clean(place.internationalPhoneNumber || place.nationalPhoneNumber);
   const social = /facebook|instagram|tiktok|linkedin\.com/i.test(website) ? [website] : [];
   const websiteStatus = !website ? "no_website" : social.length ? "social_only" : "good_website";
+  const businessType = typeLabel(place.types);
   const score = Math.min(100, 40 + (!website ? 25 : social.length ? 10 : 0) + (phone ? 10 : 0) + (social.length ? 10 : 0));
   const resolvedCity = component(place, "locality") || city;
   const state = component(place, "administrative_area_level_1") || "Malaysia";
@@ -34,8 +39,8 @@ export function placeToLead(place, { niche, city }) {
     website_domain: website ? (() => { try { return new URL(website).hostname.replace(/^www\./, ""); } catch { return null; } })() : null,
     website_url: website || null, website_status: websiteStatus, score,
     status: "new",
-    opportunity_summary: !website ? "No official website listed; create a clear enquiry path for this business." : "Improve the website journey so more local enquiries convert.",
-    research_summary: `${websiteStatus === "no_website" ? "No official website was listed" : "A website was listed"} for this ${niche.replace(/_/g, " ")} in ${resolvedCity}. Review before approaching.`,
+    opportunity_summary: !website ? "Create a clear enquiry path for customers who find the business through its listing." : "Make the existing website journey easier for local enquiries.",
+    research_summary: `${businessType ? `Google lists it as ${businessType}` : `This is a ${niche.replace(/_/g, " ")} business`} in ${resolvedCity}. ${websiteStatus === "no_website" ? "No official website link was found on the scanned listing." : websiteStatus === "social_only" ? "The website link on the listing points to social media." : "An official website link was listed."} Review before approaching.`,
     social_urls: social, suggested_scope: ["Mobile-first service page", "Enquiry form", "Local SEO basics"],
     source_urls: [clean(place.googleMapsUri)].filter(Boolean), evidence: [{ source: "Google Places API", place_id: clean(place.id) }],
   };
