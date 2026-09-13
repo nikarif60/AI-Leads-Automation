@@ -3,10 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getOwnerUserId, isSupabaseConfigured } from "@/lib/supabase/env";
+import { generateOutreachDraft } from "@/lib/outreach-draft";
 import { defaultSettings, locations, niches } from "@/lib/settings";
 import type { LeadStatus } from "@/lib/types";
 
-export type MutationState = { error: string; notice: string; status?: LeadStatus };
+export type MutationState = { error: string; notice: string; status?: LeadStatus; draft?: string; language?: "English" | "BM" };
 
 async function ownerClient() {
   const ownerId = getOwnerUserId();
@@ -42,6 +43,56 @@ export async function updateLeadStatus(leadId: string, _: MutationState, formDat
   if (activityError) return { error: "Lead updated, but the activity note could not be saved.", notice: "" };
   ["/", "/leads", "/pipeline", `/leads/${leadId}`].forEach((path) => revalidatePath(path));
   return { error: "", notice: `Saved as ${update.status}.`, status: update.status };
+}
+
+export async function saveLeadDraft(leadId: string, _: MutationState, formData: FormData): Promise<MutationState> {
+  const language = String(formData.get("language") ?? "");
+  const draft = String(formData.get("draft") ?? "").trim();
+  if (!/^[0-9a-f-]{36}$/i.test(leadId) || !["English", "BM"].includes(language) || draft.length < 3 || draft.length > 3000) {
+    return { error: "Write a message between 3 and 3,000 characters.", notice: "" };
+  }
+  const client = await ownerClient();
+  if ("error" in client) return { error: client.error ?? "Your session is no longer authorised. Sign in again.", notice: "" };
+  const field = language === "English" ? "draft_en" : "draft_bm";
+  const { data: updatedLead, error } = await client.supabase.from("leads").update({ [field]: draft }).eq("id", leadId).select("id").maybeSingle();
+  if (error || !updatedLead) return { error: "Could not save your draft. Try again.", notice: "" };
+  await client.supabase.from("lead_activities").insert({ owner_id: client.ownerId, lead_id: leadId, event_type: "follow_up", note: `${language} outreach draft saved.` });
+  revalidatePath("/outreach");
+  revalidatePath(`/leads/${leadId}`);
+  return { error: "", notice: "Draft saved." };
+}
+
+export async function generateLeadDraft(leadId: string, _: MutationState, formData: FormData): Promise<MutationState> {
+  const language = String(formData.get("language") ?? "");
+  if (!/^[0-9a-f-]{36}$/i.test(leadId) || !["English", "BM"].includes(language)) return { error: "That draft request is not valid.", notice: "" };
+  const client = await ownerClient();
+  if ("error" in client) return { error: client.error ?? "Your session is no longer authorised. Sign in again.", notice: "" };
+  const { data: lead, error: leadError } = await client.supabase.from("leads").select("business_name,niche,city,state,website_status,research_summary,opportunity_summary,suggested_scope").eq("id", leadId).maybeSingle();
+  if (leadError || !lead) return { error: "Could not load this lead for drafting.", notice: "" };
+  const apiKey = process.env.AI_PROVIDER_API_KEY;
+  if (!apiKey || apiKey === "replace_me_if_needed") return { error: "AI generation is not configured yet. Add AI_PROVIDER_API_KEY on the server.", notice: "" };
+  let draft = "";
+  try {
+    draft = await generateOutreachDraft({ lead, language: language as "English" | "BM", apiKey, baseUrl: process.env.AI_PROVIDER_BASE_URL, model: process.env.AI_PROVIDER_MODEL });
+  } catch {
+    return { error: "The AI provider could not be reached. Your existing draft is unchanged.", notice: "" };
+  }
+  if (!draft) return { error: "The AI provider returned no draft. Your existing draft is unchanged.", notice: "" };
+  const field = language === "English" ? "draft_en" : "draft_bm";
+  const { data: updatedLead, error } = await client.supabase.from("leads").update({ [field]: draft }).eq("id", leadId).select("id").maybeSingle();
+  if (error || !updatedLead) return { error: "Draft generated but could not be saved. Copy it before leaving this page.", notice: "", draft, language: language as "English" | "BM" };
+  await client.supabase.from("lead_activities").insert({ owner_id: client.ownerId, lead_id: leadId, event_type: "follow_up", note: `${language} AI outreach draft generated.` });
+  revalidatePath("/outreach");
+  revalidatePath(`/leads/${leadId}`);
+  return { error: "", notice: "AI draft generated and saved.", draft, language: language as "English" | "BM" };
+}
+
+export async function recordWhatsAppOpened(leadId: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(leadId)) return;
+  const client = await ownerClient();
+  if ("error" in client) return;
+  await client.supabase.from("lead_activities").insert({ owner_id: client.ownerId, lead_id: leadId, event_type: "whatsapp_opened", note: "WhatsApp handoff opened manually." });
+  await client.supabase.from("telegram_notifications").update({ owner_action: "whatsapp_opened", action_at: new Date().toISOString() }).eq("lead_id", leadId);
 }
 
 function numberValue(value: FormDataEntryValue | null, minimum: number, maximum: number, fallback: number) {

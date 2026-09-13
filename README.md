@@ -117,6 +117,22 @@ Leave `ENABLE_LEAD_SCANS` false until the GitHub secrets are configured and you 
 
 Vercel Hobby hosts the dashboard. GitHub Actions owns the five-hour schedule so the owner's MacBook can remain off.
 
+## 6. AI outreach drafts
+
+The Outreach workspace has a manual **Generate with AI** action. It calls an OpenAI-compatible `/chat/completions` endpoint from the server, saves the selected English or BM draft to the owner-only `leads` row, and records the activity. For new priority leads, the scan workflow also generates the English draft before it sends the Telegram alert, so its **Open WhatsApp** button opens with the AI text ready to review. It never sends WhatsApp messages.
+
+Add these server-only values when you choose a provider:
+
+```bash
+AI_PROVIDER_API_KEY=replace_me_if_needed
+AI_PROVIDER_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+AI_PROVIDER_MODEL=gemini-3.1-flash-lite
+```
+
+Keep the key out of `NEXT_PUBLIC_*` variables and out of browser code. Without a key, the workspace keeps its local fallback draft and explains what setup is missing.
+
+For GitHub Actions, add `AI_PROVIDER_API_KEY` as a repository secret, plus `AI_PROVIDER_BASE_URL` and `AI_PROVIDER_MODEL` as repository variables. If they are absent, Telegram alerts still arrive with a safe fallback draft.
+
 ## Phase 1 safety boundary
 
 - Demo records are clearly labeled and WhatsApp is disabled for them.

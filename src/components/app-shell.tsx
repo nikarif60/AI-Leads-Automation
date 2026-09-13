@@ -1,6 +1,6 @@
 "use client";
 
-import { Broadcast, GearSix, House, Kanban, MagnifyingGlass, PaperPlaneTilt, X } from "@phosphor-icons/react";
+import { Broadcast, ChatTeardropText, GearSix, House, Kanban, MagnifyingGlass, PaperPlaneTilt, X } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import { signOut } from "@/app/login/actions";
 const navigation = [
   { href: "/", label: "Office", shortLabel: "Home", icon: House },
   { href: "/leads", label: "Leads", shortLabel: "Leads", icon: MagnifyingGlass },
+  { href: "/outreach", label: "Outreach", shortLabel: "Outreach", icon: ChatTeardropText },
   { href: "/pipeline", label: "Pipeline", shortLabel: "Pipeline", icon: Kanban },
   { href: "/telegram", label: "Telegram", shortLabel: "Telegram", icon: PaperPlaneTilt },
   { href: "/scans", label: "Scan History", shortLabel: "Scans", icon: Broadcast },
@@ -57,7 +58,7 @@ export function AppShell({ children, office }: { children: ReactNode; office: Re
         <details className="office-menu"><summary aria-label="Open workspace menu"><span>N</span></summary><div>{navigation.map(({ href, label }) => <Link key={href} href={href} scroll={false}>{label}</Link>)}<form action={signOut}><button type="submit">Sign out</button></form></div></details>
       </header>
       <main className="page-frame">{office}</main>
-      <nav className="mobile-nav" aria-label="Mobile navigation">{navigation.filter(({ href }) => href !== "/scans").map(({ href, shortLabel, icon: Icon }) => <Link key={href} href={href} scroll={false} className={active(href) ? "active" : ""}><Icon weight={active(href) ? "fill" : "regular"} /><span>{shortLabel}</span></Link>)}</nav>
+      <nav className="mobile-nav" aria-label="Mobile navigation">{navigation.filter(({ href }) => ["/", "/leads", "/outreach", "/pipeline", "/telegram"].includes(href)).map(({ href, shortLabel, icon: Icon }) => <Link key={href} href={href} scroll={false} className={active(href) ? "active" : ""}><Icon weight={active(href) ? "fill" : "regular"} /><span>{shortLabel}</span></Link>)}</nav>
       <dialog ref={dialogRef} data-active={!isHome} className="workspace-modal" aria-label={pathname.startsWith("/leads/") ? "Lead details workspace" : `${current?.label || "Office"} workspace`} onCancel={(event) => { event.preventDefault(); close(); }} onClick={(event) => { if (event.target === event.currentTarget) { const rect = event.currentTarget.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) close(); } }}>
         <header className="workspace-windowbar"><span className="workspace-brand"><Image src="/nykstack-icon.webp" alt="" width={22} height={22} />Workspace</span><span className="workspace-window-hint">Your office is right behind you</span><button className="workspace-close" onClick={close} aria-label="Close workspace and return to office"><X size={19} /><kbd>esc</kbd></button></header>
         <nav className="workspace-tabs" aria-label="Workspace pages">{navigation.filter(({ href }) => href !== "/").map(({ href, label, icon: Icon }) => <Link key={href} href={href} scroll={false} aria-current={active(href) ? "page" : undefined}><Icon size={17} /><span>{label}</span></Link>)}</nav>

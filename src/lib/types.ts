@@ -39,6 +39,7 @@ export type Lead = {
   address: string;
   website?: string;
   social?: string;
+  googleMapsUrl?: string;
   lastSeen: string;
   discoveredAt: string;
   englishDraft: string;

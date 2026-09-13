@@ -28,12 +28,13 @@ function label(value: string) { return value.replace(/_/g, " ").replace(/\b\w/g,
 
 function mapLead(row: DbLead, scoreReasons: { label: string; points: number }[] = []): Lead {
   const social = strings(row.social_urls)[0];
+  const googleMapsUrl = strings(row.source_urls).find((url) => /^https:\/\/(?:www\.)?google\.[^/]+\/maps|^https:\/\/maps\.app\.goo\.gl\//.test(url));
   return {
     id: text(row.id), company: text(row.business_name), niche: text(row.niche), city: text(row.city), state: text(row.state),
     score: Number(row.score) || 0, websiteStatus: websiteStatuses[text(row.website_status)] ?? "No website",
     opportunity: text(row.opportunity_summary), reason: text(row.research_summary), status: leadStatuses[text(row.status)] ?? "New",
     phone: text(row.phone, "Not listed"), whatsapp: text(row.whatsapp_number), address: text(row.address), website: text(row.website_url) || undefined,
-    social, lastSeen: date(row.last_seen_at), discoveredAt: date(row.discovered_at), englishDraft: text(row.draft_en), bmDraft: text(row.draft_bm),
+    social, googleMapsUrl, lastSeen: date(row.last_seen_at), discoveredAt: date(row.discovered_at), englishDraft: text(row.draft_en), bmDraft: text(row.draft_bm),
     scope: strings(row.suggested_scope), scoreReasons,
   };
 }

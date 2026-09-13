@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { getAdminClient, placeToLead, requiredLiveEnv, searchPlaces } from "./google-places-adapter.mjs";
-import { priorityLeadMessage, sendTelegramMessage } from "./telegram-notifier.mjs";
+import { priorityLeadKeyboard, priorityLeadMessage, sendTelegramMessage } from "./telegram-notifier.mjs";
+import { generateOutreachDraft } from "../src/lib/outreach-draft.ts";
 
 const niches = ["corporate_services", "renovation_interior", "property_homestay", "salon_barber", "automotive", "cafe_restaurant"];
 const locationBatches = [
@@ -30,7 +31,7 @@ export function googleRequestLimits(perScan = "5", perDay = "25") {
   return { perScan: scan, perDay: day };
 }
 
-function selfCheck() {
+async function selfCheck() {
   const first = selectRotation(new Date("2026-09-03T00:00:00Z"));
   const next = selectRotation(new Date("2026-09-03T05:00:00Z"));
   assert.equal(first.cities.length > 0, true);
@@ -41,14 +42,26 @@ function selfCheck() {
   assert.throws(() => googleRequestLimits("6", "25"));
   assert.throws(() => googleRequestLimits("5", "26"));
   assert.match(priorityLeadMessage({ id: "lead-1", business_name: "Demo & Co", city: "Kuala Lumpur", score: 80, opportunity_summary: "<strong>Opportunity</strong>" }, "https://app.example"), /Demo &amp; Co/);
+  const keyboard = priorityLeadKeyboard({ id: "lead-1", business_name: "Demo Co", city: "Kuala Lumpur", whatsapp_number: "60123456789" }, "https://app.example");
+  assert.match(keyboard.inline_keyboard[0][0].url, /^https:\/\/wa\.me\/60123456789\?text=/);
+  assert.match(keyboard.inline_keyboard[0][1].url, /^https:\/\/wa\.me\/60123456789\?text=/);
+  assert.match(keyboard.inline_keyboard[1][0].url, /^https:\/\/www\.google\.com\/maps\/search/);
   const lead = placeToLead({ id: "places/x", displayName: { text: "Demo Co" }, formattedAddress: "Kuala Lumpur, Malaysia", internationalPhoneNumber: "+60123456789", types: [] }, { niche: "corporate_services", city: "Kuala Lumpur" });
   assert.equal(lead.country_code, "MY");
   assert.equal(lead.website_status, "no_website");
+  const draft = await generateOutreachDraft({
+    lead: { business_name: "Demo Co", website_status: "no_website" }, language: "English", apiKey: "test", baseUrl: "https://ai.example", model: "test",
+    fetchImpl: async () => new Response(JSON.stringify({ choices: [{ message: { content: "I could not find an official website link on the listing I reviewed." } }] })),
+  });
+  assert.match(draft, /could not find an official website link/i);
+  const aiKeyboard = priorityLeadKeyboard({ id: "lead-1", business_name: "Demo Co", city: "Kuala Lumpur", whatsapp_number: "60123456789", draft_en: draft, draft_bm: "Saya tidak menjumpai pautan website rasmi." }, "https://app.example");
+  assert.match(aiKeyboard.inline_keyboard[0][0].url, /could%20not%20find%20an%20official%20website%20link/i);
+  assert.match(aiKeyboard.inline_keyboard[0][1].url, /Saya%20tidak%20menjumpai/i);
   console.log("Scan planner self-check passed.");
 }
 
 if (process.argv.includes("--self-check")) {
-  selfCheck();
+  await selfCheck();
   process.exit(0);
 }
 
@@ -92,7 +105,7 @@ if (!dryRun) {
         return true;
       });
       newLeadsCount = freshLeads.length;
-      const result = freshLeads.length ? await supabase.from("leads").insert(freshLeads).select("id,business_name,city,score,opportunity_summary") : { data: [], error: null };
+      const result = freshLeads.length ? await supabase.from("leads").insert(freshLeads).select("id,business_name,niche,city,state,website_status,research_summary,score,opportunity_summary,suggested_scope,whatsapp_number,phone,draft_en,draft_bm,source_urls") : { data: [], error: null };
       if (result.error) throw new Error(`Could not save leads: ${result.error.message}`);
       insertedLeads = result.data ?? [];
     }
@@ -103,7 +116,18 @@ if (!dryRun) {
         const queued = await supabase.from("telegram_notifications").insert({ owner_id: process.env.OWNER_USER_ID, lead_id: lead.id, scan_job_id: job.data.id }).select("id").single();
         if (queued.error) throw new Error(`Could not queue Telegram notification: ${queued.error.message}`);
         try {
-          const telegramMessageId = await sendTelegramMessage({ token: process.env.TELEGRAM_BOT_TOKEN, chatId: process.env.TELEGRAM_CHAT_ID, text: priorityLeadMessage(lead, process.env.NEXT_PUBLIC_APP_URL) });
+          let aiDraftEn = "";
+          let aiDraftBm = "";
+          try {
+            aiDraftEn = await generateOutreachDraft({ lead, language: "English", apiKey: process.env.AI_PROVIDER_API_KEY, baseUrl: process.env.AI_PROVIDER_BASE_URL, model: process.env.AI_PROVIDER_MODEL });
+            aiDraftBm = await generateOutreachDraft({ lead, language: "BM", apiKey: process.env.AI_PROVIDER_API_KEY, baseUrl: process.env.AI_PROVIDER_BASE_URL, model: process.env.AI_PROVIDER_MODEL });
+            const drafts = { ...(aiDraftEn ? { draft_en: aiDraftEn } : {}), ...(aiDraftBm ? { draft_bm: aiDraftBm } : {}) };
+            if (Object.keys(drafts).length) await supabase.from("leads").update(drafts).eq("id", lead.id);
+          } catch {
+            // Keep the Telegram alert useful even when the optional AI provider is unavailable.
+          }
+          const telegramLead = { ...lead, ...(aiDraftEn ? { draft_en: aiDraftEn } : {}), ...(aiDraftBm ? { draft_bm: aiDraftBm } : {}) };
+          const telegramMessageId = await sendTelegramMessage({ token: process.env.TELEGRAM_BOT_TOKEN, chatId: process.env.TELEGRAM_CHAT_ID, text: priorityLeadMessage(telegramLead, process.env.NEXT_PUBLIC_APP_URL), keyboard: priorityLeadKeyboard(telegramLead, process.env.NEXT_PUBLIC_APP_URL) });
           const delivered = await supabase.from("telegram_notifications").update({ delivery_status: "sent", telegram_message_id: telegramMessageId, sent_at: new Date().toISOString() }).eq("id", queued.data.id);
           if (delivered.error) throw new Error(`Could not record Telegram delivery: ${delivered.error.message}`);
           notificationsSent += 1;
