@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const ENDPOINT = "https://places.googleapis.com/v1/places:searchText";
+const HIGH_VALUE_NICHES = new Set(["corporate_services", "renovation_interior", "property_homestay", "automotive"]);
 const FIELD_MASK = [
   "places.id", "places.displayName", "places.formattedAddress", "places.shortFormattedAddress",
   "places.nationalPhoneNumber", "places.internationalPhoneNumber", "places.websiteUri",
@@ -17,6 +18,18 @@ function component(place, type) {
   return (place.addressComponents ?? []).find((item) => item.types?.includes(type))?.longText ?? "";
 }
 
+export function leadScore({ niche, websiteStatus, hasPhone }) {
+  return Math.min(100, 30
+    + (HIGH_VALUE_NICHES.has(niche) ? 15 : 0)
+    + (websiteStatus === "no_website" ? 25 : websiteStatus === "social_only" ? 20 : 0)
+    + (hasPhone ? 10 : 0));
+}
+
+export function telegramThreshold(value = "60") {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? Math.max(0, Math.min(parsed, 100)) : 60;
+}
+
 export function placeToLead(place, { niche, city }) {
   const businessName = clean(place.displayName?.text);
   const address = clean(place.formattedAddress);
@@ -25,7 +38,7 @@ export function placeToLead(place, { niche, city }) {
   const social = /facebook|instagram|tiktok|linkedin\.com/i.test(website) ? [website] : [];
   const websiteStatus = !website ? "no_website" : social.length ? "social_only" : "good_website";
   const businessType = typeLabel(place.types);
-  const score = Math.min(100, 40 + (!website ? 25 : social.length ? 10 : 0) + (phone ? 10 : 0) + (social.length ? 10 : 0));
+  const score = leadScore({ niche, websiteStatus, hasPhone: Boolean(phone) });
   const resolvedCity = component(place, "locality") || city;
   const state = component(place, "administrative_area_level_1") || "Malaysia";
   return {

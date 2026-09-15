@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { getAdminClient, placeToLead, requiredLiveEnv, searchPlaces } from "./google-places-adapter.mjs";
-import { priorityLeadKeyboard, priorityLeadMessage, sendTelegramMessage } from "./telegram-notifier.mjs";
+import { getAdminClient, leadScore, placeToLead, requiredLiveEnv, searchPlaces, telegramThreshold } from "./google-places-adapter.mjs";
+import { noPriorityLeadMessage, priorityLeadKeyboard, priorityLeadMessage, sendTelegramMessage } from "./telegram-notifier.mjs";
 import { fallbackOutreachDraft, generateOutreachDraft } from "../src/lib/outreach-draft.ts";
 
 const niches = ["corporate_services", "renovation_interior", "property_homestay", "salon_barber", "automotive", "cafe_restaurant"];
@@ -41,7 +41,12 @@ async function selfCheck() {
   assert.deepEqual(googleRequestLimits("5", "25"), { perScan: 5, perDay: 25 });
   assert.throws(() => googleRequestLimits("6", "25"));
   assert.throws(() => googleRequestLimits("5", "26"));
+  assert.equal(leadScore({ niche: "renovation_interior", websiteStatus: "social_only", hasPhone: true }), 75);
+  assert.equal(leadScore({ niche: "cafe_restaurant", websiteStatus: "social_only", hasPhone: true }), 60);
+  assert.equal(telegramThreshold("60"), 60);
+  assert.equal(telegramThreshold("999"), 100);
   assert.match(priorityLeadMessage({ id: "lead-1", business_name: "Demo & Co", city: "Kuala Lumpur", score: 80, opportunity_summary: "<strong>Opportunity</strong>" }, "https://app.example"), /Demo &amp; Co/);
+  assert.match(noPriorityLeadMessage({ scanned: 15, newLeads: 2 }), /No priority leads/);
   const keyboard = priorityLeadKeyboard({ id: "lead-1", business_name: "Demo Co", city: "Kuala Lumpur", whatsapp_number: "60123456789" }, "https://app.example");
   assert.match(keyboard.inline_keyboard[0][0].url, /^https:\/\/wa\.me\/60123456789\?text=/);
   assert.match(keyboard.inline_keyboard[0][1].url, /^https:\/\/wa\.me\/60123456789\?text=/);
@@ -86,6 +91,7 @@ const plan = {
   country: "MY",
   ...selectRotation(),
   notificationLimit: notificationLimit(process.env.MAX_ALERTS_PER_SCAN),
+  telegramThreshold: telegramThreshold(process.env.TELEGRAM_THRESHOLD),
   googleRequestLimits: googleRequestLimitsForRun,
   githubRunId: process.env.GITHUB_RUN_ID ?? null,
 };
@@ -121,7 +127,7 @@ if (!dryRun) {
       insertedLeads = result.data ?? [];
     }
     let notificationsSent = 0;
-    const priorityLeads = insertedLeads.filter((lead) => lead.score >= 75).sort((a, b) => b.score - a.score).slice(0, plan.notificationLimit);
+    const priorityLeads = insertedLeads.filter((lead) => lead.score >= plan.telegramThreshold).sort((a, b) => b.score - a.score).slice(0, plan.notificationLimit);
     if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) {
       for (const lead of priorityLeads) {
         const queued = await supabase.from("telegram_notifications").insert({ owner_id: process.env.OWNER_USER_ID, lead_id: lead.id, scan_job_id: job.data.id }).select("id").single();
@@ -144,6 +150,14 @@ if (!dryRun) {
           notificationsSent += 1;
         } catch (error) {
           await supabase.from("telegram_notifications").update({ delivery_status: "failed", last_error: error instanceof Error ? error.message : String(error) }).eq("id", queued.data.id);
+        }
+      }
+      if (!priorityLeads.length) {
+        try {
+          await sendTelegramMessage({ token: process.env.TELEGRAM_BOT_TOKEN, chatId: process.env.TELEGRAM_CHAT_ID, text: noPriorityLeadMessage({ scanned: leads.length, newLeads: newLeadsCount, threshold: plan.telegramThreshold }) });
+          notificationsSent += 1;
+        } catch (error) {
+          console.warn(`Could not send no-priority scan summary: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }

@@ -1,3 +1,5 @@
+import { fallbackOutreachDraft } from "../src/lib/outreach-draft.ts";
+
 const ENDPOINT = "https://api.telegram.org/bot";
 
 function escapeHtml(value) {
@@ -17,6 +19,19 @@ export function priorityLeadMessage(lead, appUrl = "") {
     "",
     "Review the message before opening WhatsApp.",
   ].join("\n") + leadUrl;
+}
+
+export function noPriorityLeadMessage({ scanned = 0, newLeads = 0, threshold = 75 }) {
+  return [
+    "🤖 <b>SCAN COMPLETE</b>",
+    "━━━━━━━━━━━━━━━━━━",
+    `No priority leads (score ${threshold}+) found this time.`,
+    "",
+    `🔎 <b>Listings scanned:</b> ${scanned}`,
+    `📥 <b>New leads saved:</b> ${newLeads}`,
+    "",
+    "The dashboard has been updated. The next scan will run automatically.",
+  ].join("\n");
 }
 
 export function priorityLeadKeyboard(lead, appUrl = "") {
@@ -47,4 +62,3 @@ export async function sendTelegramMessage({ token, chatId, text, keyboard, fetch
   if (!response.ok || !body.ok) throw new Error(body.description || "Telegram notification failed.");
   return String(body.result.message_id);
 }
-import { fallbackOutreachDraft } from "../src/lib/outreach-draft.ts";

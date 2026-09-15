@@ -26,6 +26,7 @@ jobs:
     env:
       ENABLE_LIVE_SCANS: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == false && 'true' || vars.ENABLE_LEAD_SCANS }}
       MAX_ALERTS_PER_SCAN: ${{ vars.MAX_ALERTS_PER_SCAN || '5' }}
+      TELEGRAM_THRESHOLD: ${{ vars.TELEGRAM_THRESHOLD || '60' }}
       MAX_GOOGLE_REQUESTS_PER_SCAN: ${{ vars.MAX_GOOGLE_REQUESTS_PER_SCAN || '5' }}
       DAILY_GOOGLE_REQUEST_LIMIT: ${{ vars.DAILY_GOOGLE_REQUEST_LIMIT || '25' }}
       NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}

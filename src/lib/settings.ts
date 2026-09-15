@@ -21,6 +21,6 @@ export const locations = ["Kuala Lumpur & Selangor", "Johor Bahru & Skudai", "Pe
 
 export const defaultSettings: AppSettings = {
   activeNiches: niches.map(([value]) => value), activeLocationBatches: locations,
-  minimumLeadScore: 40, telegramThreshold: 75, maxAlertsPerScan: 5, dailySpendLimitUsd: 0,
+  minimumLeadScore: 40, telegramThreshold: 60, maxAlertsPerScan: 5, dailySpendLimitUsd: 0,
   dailyDigestTime: "21:00", cooldownDays: 90, preferredLanguage: "auto", outreachSignature: "Nik\nWeb Developer, NykStack",
 };
